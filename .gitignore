@@ -4,6 +4,7 @@
 
 # user defined
 *.*~
+run/results/
 
 # IntelliJ project files
 .idea

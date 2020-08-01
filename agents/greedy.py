@@ -23,7 +23,7 @@ def greedySelect(stateQValues, randomGenerator):
 
 
 def epsilonGreedySelect(stateQValues, randomGenerator, epsilon):
-    if randomGenerator.random() > epsilon:
+    if randomGenerator.random() >= epsilon:
         return greedySelect(stateQValues, randomGenerator)
     return randomGenerator.randint(len(stateQValues))
 

@@ -36,10 +36,6 @@ class TDAgent(BaseAgent):
         target = reward
         self.values[self.last_state] += self.step_size * (target - self.values[self.last_state])
 
-    def agent_cleanup(self):
-        self.last_state = None
-        self.last_action = None
-
     def agent_message(self, message):
         if message == "values":
             return self.values
@@ -69,10 +65,6 @@ class TDControlAgent(BaseAgent):
 
     def agent_step(self, reward, observation):
         raise NotImplementedError("plaease implement agent_step")
-
-    def agent_cleanup(self):
-        self.last_state = None
-        self.last_action = None
 
     def agent_end(self, reward):
         target = reward

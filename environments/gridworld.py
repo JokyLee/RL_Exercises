@@ -157,3 +157,77 @@ class CliffWorldEnvironment_RewardGoal_RandomStart(CliffWorldEnvironment_RewardG
         self.now = self.rand_generator.choice(self.valid_start_state, 1)[0]
         return self.now
 
+
+class MazeEnvironment(GridWorldEnvironment):
+    rows = 6
+    cols = 9
+    def env_init(self, env_info={}):
+        super(MazeEnvironment, self).env_init(env_info)
+
+        self.obstacles = [(3, i) for i in range(1, 9)]
+        self.start_coord = (5, 3)
+        self.end_coord = (0, 8)
+        self.current_state = [None, None]
+
+    def env_start(self):
+        self.now = self.coord2Idx(self.start_coord)
+        return self.now
+
+    def _isOutOfBounds(self, row, col):
+        if row < 0 or row > self.rows - 1 or col < 0 or col > self.cols - 1:
+            return True
+        return False
+
+    def _isObstacle(self, row, col):
+        if (row, col) in self.obstacles:
+            return True
+        return False
+
+    def isTerminal(self, state):
+        coord = self.idx2Coord(state)
+        if coord[0] == self.end_coord[0] and coord[1] == self.end_coord[1]:
+            return True
+        return False
+
+    def transitions(self, state, action):
+        action = Actions(action)
+        coord = self.idx2Coord(state)
+        if action == Actions.RIGHT:
+            right = coord[1] + 1
+            if not self._isOutOfBounds(coord[0], right) and not self._isObstacle(coord[0], right):
+                coord[1] = right
+        elif action == Actions.LEFT:
+            left = coord[1] - 1
+            if not self._isOutOfBounds(coord[0], left) and not self._isObstacle(coord[0], left):
+                coord[1] = left
+        elif action == Actions.UP:
+            up = coord[0] - 1
+            if not self._isOutOfBounds(up, coord[1]) and not self._isObstacle(up, coord[1]):
+                coord[0] = up
+        elif action == Actions.DOWN:
+            down = coord[0] + 1
+            if not self._isOutOfBounds(down, coord[1]) and not self._isObstacle(down, coord[1]):
+                coord[0] = down
+        else:
+            raise NotImplementedError("Invalid action.")
+
+        next_state = self.coord2Idx(coord)
+        p = np.zeros((self.num_states, 2))
+        p[:, 0] = 0
+        if self.isTerminal(next_state):
+            p[next_state][0] = 1 # reward
+        p[next_state][1] = 1 # action probability
+        return p
+
+
+class ShortcutMazeEnvironment(MazeEnvironment):
+    def env_init(self, env_info={}):
+        super(ShortcutMazeEnvironment, self).env_init(env_info)
+        self.change_at_n = env_info.get('change_at_n')
+        self.time_steps = 0
+
+    def env_step(self, action):
+        self.time_steps += 1
+        if self.time_steps == self.change_at_n:
+            self.obstacles = self.obstacles[:-1]
+        return super(ShortcutMazeEnvironment, self).env_step(action)

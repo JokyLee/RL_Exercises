@@ -43,10 +43,6 @@ class MonteCarloPredictionAgent(BaseAgent):
                 self.return_count[St] += 1
                 self.values[St] = self.values[St] + (G - self.values[St]) / self.return_count[St]
 
-    def agent_cleanup(self):
-        self.episode_states = None
-        self.episode_rewards = None
-
     def agent_message(self, message):
         if message == "values":
             return self.values
@@ -101,12 +97,6 @@ class MonteCarloControlAgent(BaseAgent):
                 self.q_values[state_action_pair] += (G - self.q_values[state_action_pair]) / self.returns_count[state_action_pair]
                 St, At = state_action_pair
                 self._updatePolicy(St, At)
-
-    def agent_cleanup(self):
-        self.episode_state_action_pair = None
-        self.episode_reward = None
-        self.last_action = None
-        self.last_state = None
 
     def agent_message(self, message):
         if message == "q_values":
