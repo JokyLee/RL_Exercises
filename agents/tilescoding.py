@@ -25,6 +25,7 @@ The first argument is either an index hash table of a given size (created by (ma
 an integer "size" (range of the indices from 0), or nil (for testing, indicating that the tile
 coordinates are to be returned without being converted to indices).
 """
+import numpy as np
 
 basehash = hash
 
@@ -108,3 +109,25 @@ def tileswrap(ihtORsize, numtilings, floats, wrapwidths, ints=[], readonly=False
         coords.extend(ints)
         Tiles.append(hashcoords(coords, ihtORsize, readonly))
     return Tiles
+
+
+class TileCoder:
+    def __init__(self, ihtSize, numTiling, numTiles, observationSpace):
+        self.iht = IHT(ihtSize)
+        self.num_tilings = numTiling
+        self.num_tiles = numTiles
+        self.observation_space = observationSpace
+        self.observation_scales = numTiles / (observationSpace.high - observationSpace.low)
+
+    def getTiles(self, observation):
+        active_tiles = tiles(self.iht, self.num_tilings, observation * self.observation_scales)
+        return np.array(active_tiles)
+
+
+class TileWrapCoder(TileCoder):
+    def getTiles(self, observation):
+        active_tiles = tileswrap(
+            self.iht, self.num_tilings, observation * self.observation_scales,
+            wrapwidths=[self.num_tiles, False]
+        )
+        return np.array(active_tiles)

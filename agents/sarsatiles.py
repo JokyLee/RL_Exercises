@@ -7,21 +7,8 @@ __date__ = '2020.08.03'
 import numpy as np
 
 from . import greedy
-from . import tilescoding
 from rlglue import BaseAgent
-
-
-class TileCoder:
-    def __init__(self, ihtSize, numTiling, numTiles, observationSpace):
-        self.iht_size = tilescoding.IHT(ihtSize)
-        self.num_tiling = numTiling
-        self.num_tiles = numTiles
-        self.observation_space = observationSpace
-        self.observation_scales = numTiles / (observationSpace.high - observationSpace.low)
-
-    def getTiles(self, observation):
-        tiles = tilescoding.tiles(self.iht_size, self.num_tiling, observation * self.observation_scales)
-        return np.array(tiles)
+from .tilescoding import TileCoder
 
 
 class SarseTilesAgent(BaseAgent):

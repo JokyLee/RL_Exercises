@@ -20,7 +20,7 @@ class MountainCarEnvironment(BaseEnvironment):
         self.env = self.__class__.ENV
         self.env._max_episode_steps = 15000
         self.env.seed(env_info.get("seed"))
-        self.render = env_info.get("render", False)
+        self.render_flag = env_info.get("render_flag", False)
         self.sleep_time = env_info.get("sleep_time", 0.05)
 
     def env_start(self):
@@ -28,7 +28,7 @@ class MountainCarEnvironment(BaseEnvironment):
         return observation
 
     def env_step(self, action):
-        if self.render:
+        if self.render_flag:
             self.env.render()
             time.sleep(self.sleep_time)
         observation, reward, term, _ = self.env.step(action)

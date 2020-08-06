@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 from rlglue import RLGlue
 from agents import sarsatiles
-from environments import mountaincar
+from environments import gymenvs
 
 
 def runExp(env, agent, envConfig, agentConfig, numRuns, numEpisodes):
@@ -30,7 +30,7 @@ def runExp(env, agent, envConfig, agentConfig, numRuns, numEpisodes):
     plt.plot(np.mean(np.array(all_steps), axis=0))
     plt.show()
     # rendering
-    rl_glue.environment.render = True
+    rl_glue.environment.render_flag = True
     rl_glue.rl_episode()
     rl_glue.environment.env.close()
 
@@ -40,7 +40,7 @@ def main():
         "seed": 0,
         "num_states": 500,
     }
-    env = mountaincar.MountainCarEnvironment
+    env = gymenvs.createEnvironmentType("MountainCar-v0", "MountainCarEnvironment", maxEpisodeSteps=15000)
 
     agent_config = {
         "seed": 0,
